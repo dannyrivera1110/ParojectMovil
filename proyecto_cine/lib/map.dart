@@ -42,4 +42,25 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     // TODO: implement build
     throw UnimplementedError();
   }
+  
+  void showDetails(String storeName) {
+    setState(() {
+      selectedStoreName = storeName;
+      showStoreDetails = true;
+    });
+  }
+
+  void hideDetails() {
+    setState(() {
+      showStoreDetails = false;
+    });
+  }
+
+  void getCurrentLocation() async {
+    Position position = await determinePosition();
+    setState(() {
+      myPosition = LatLng(position.latitude, position.longitude);
+      print(myPosition);
+    });
+  }
   }
