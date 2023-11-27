@@ -1,33 +1,39 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:proyecto_cine/Login.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:proyecto_cine/Sharepreference/Sharepreference.dart';
+import 'package:proyecto_cine/screens/LoginPage.dart';
+import 'package:proyecto_cine/screens/carteleracine.dart';
+import 'package:proyecto_cine/screens/detailpel2.dart';
 
+import 'package:proyecto_cine/screens/detailspel.dart';
+
+// ignore: constant_identifier_names
 const MAPBOX_ACCESS_TOKEN =
-'pk.eyJ1IjoicGl0bWFjIiwiYSI6ImNsY3BpeWxuczJhOTEzbnBlaW5vcnNwNzMifQ.ncTzM4bW-jpq-hUFutnR1g';
-class MapScreen1 extends StatefulWidget {
-  static const String nombre = 'mapa';
+    'pk.eyJ1IjoiZGFuaWVsanIxMSIsImEiOiJjbG5lcXhiYTgwZThhMmpvNGtlNG1vcTdxIn0.xLcplNW4L11ON3Ekf3wpaQ';
 
-  const MapScreen1({super.key});
+class MapScreen extends StatefulWidget {
+  static const String nombre = 'mapa';
+   
+   MapScreen({super.key});
 
   @override
-  State<MapScreen1> createState() => _MapScreenState();
+  State<MapScreen> createState() => _MapScreenState();
 }
- LatLng? myPosition;
-class _MapScreenState extends State<MapScreen1> with TickerProviderStateMixin {
-  final prefs = PrefernciaUsuario();
- 
 
-  final PageController _pageController = PageController();
-  bool showStoreDetails = false;
-  String selectedStoreName = "";
+class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
+  final prefs = PrefernciaUsuario();
+  
+  PageController _pageController = PageController();
+  bool showCineDetails = false;
+  String selectedcine = "";
   //animations marker
   late AnimationController animationController;
   late Animation<double> sizeAnimation;
-
-  String? selectedCategory; // Categoría seleccionad a
+  LatLng? myPosition;
+  String? selectedcines; // Categoría seleccionad a
 
   Future<Position> determinePosition() async {
     LocationPermission permission;
@@ -41,37 +47,30 @@ class _MapScreenState extends State<MapScreen1> with TickerProviderStateMixin {
     return await Geolocator.getCurrentPosition();
   }
 
-  void showDetails(String storeName) {
+  void showDetails(String selectedcine) {
     setState(() {
-      selectedStoreName = storeName;
-      showStoreDetails = true;
+      selectedcine = selectedcine;
+      showCineDetails = true;
     });
   }
 
   void hideDetails() {
     setState(() {
-      showStoreDetails = false;
+      showCineDetails = false;
     });
   }
 
   void getCurrentLocation() async {
-    Future<Position> determinePosition() async {
-      LocationPermission permission;
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          return Future.error('error');
-        }
-      }
-      return await Geolocator.getCurrentPosition();
-    }
+    Position position = await determinePosition();
+    setState(() {
+      myPosition = LatLng(position.latitude, position.longitude);
+      print(myPosition);
+    });
   }
 
   @override
   void initState() {
     //initialization
-
     animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1000));
     sizeAnimation = Tween<double>(
@@ -79,7 +78,6 @@ class _MapScreenState extends State<MapScreen1> with TickerProviderStateMixin {
       end: 60.0,
     ).animate(animationController);
     animationController.repeat(reverse: true);
-
     print(animationController);
 //animationController.forward();
     getCurrentLocation();
@@ -94,52 +92,52 @@ class _MapScreenState extends State<MapScreen1> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    prefs.ultimapagina = LoginPage1.nombre;
+    
+     prefs.ultimapagina = LoginPage.nombre;
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Bienvenido ${prefs.usuario}",
-            textAlign: TextAlign.center, style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0))),
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        centerTitle: true,
-      ),
-      drawer: Drawer(
-          child: ListView(children: <Widget>[
-        DropdownButtonFormField<String>(
-          value: selectedCategory,
-          onChanged: (newValue) {
-            setState(() {
-              selectedCategory = newValue;
-            });
-          },
-          items: ["All Categories", ...getUniqueCategories(Cine)].map<DropdownMenuItem<String>>((categoria) {
-  return DropdownMenuItem<String>(
-    value: categoria,
-    child: Text(categoria),
-            );
-          }).toList(),
+    appBar: AppBar(
+      title: Text("Bienvenido ${prefs.usuario}", textAlign:TextAlign.center , style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0))),
+      backgroundColor:const Color.fromARGB(255, 255, 255, 255),
+       centerTitle: true,
+    ),
+    drawer: Drawer(child: ListView(children:<Widget>[
+      
+     DropdownButtonFormField<String>(
+                      value: selectedcines,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedcines = newValue;
+                        });
+                      },
+                      items: ['Todos los Cines', ...getUniquenombre(local)]
+                          .map((nombre1) {
+                        return DropdownMenuItem(
+                          value: nombre1,
+                          child: Text(nombre1),
+                          
+                          
+                        );
+                      }).toList(),
+                          decoration: InputDecoration(
+                            labelText: "Seek",
+                            filled: true,
+                            fillColor: const Color.fromARGB(255, 255, 255, 255),
 
-          decoration: InputDecoration(
-            labelText: "Seek",
-            filled: true,
-            fillColor: Color.fromARGB(255, 255, 255, 255),
-
-            //filled: true,
-            //fillColor: Colors.,
-          ),
-          style: const TextStyle(
-            color: Color.fromARGB(255, 0, 0, 0),
-            fontSize: 16.0,
-          ),
-        )
-      ])),
+                          //filled: true,
+                          //fillColor: Colors.,
+                          ),  
+                      style: const TextStyle(
+                        color:  Color.fromARGB(255, 0, 0, 0),
+                        fontSize: 16.0,
+                      ),
+                      // icon: Icon(Icons.arrow_drop_down),
+                    )
+    ])),
       //  drawer: DrawerButtonIcon(),
       body: myPosition == null
           ? const CircularProgressIndicator()
           : Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                ),
                 Expanded(
                   child: Stack(
                     children: [
@@ -183,21 +181,21 @@ class _MapScreenState extends State<MapScreen1> with TickerProviderStateMixin {
                                 },
                               ),
                               // Filtrar y agregar marcadores para las tiendas
-                              ...getFilteredStores(Cine, selectedCategory)
-                                  .map((tienda) {
+                              ...getFilteredlocal(local, selectedcines)
+                                  .map((local) {
                                 return Marker(
                                   height: 50,
                                   width: 50,
                                   point:
-                                      LatLng(tienda.latitud, tienda.longitud),
+                                      LatLng(local.latitud, local.longitud),
                                   builder: (context) {
                                     return GestureDetector(
                                       onTap: () {
                                         //    _pageController.animateToPage(tiendas.indexOf(tienda),duration: const Duration(milliseconds: 500), curve:Curves.bounceIn);
-                                        print(tienda);
+                                        print(local);
                                         setState(() {
-                                          showStoreDetails = true;
-                                          selectedStoreName = tienda.nombre;
+                                          showCineDetails = true;
+                                          selectedcine = local.nombre;
                                         });
                                       },
                                       child: AnimatedBuilder(
@@ -222,7 +220,7 @@ class _MapScreenState extends State<MapScreen1> with TickerProviderStateMixin {
                           ),
                         ],
                       ),
-                      if (showStoreDetails)
+                      if (showCineDetails)
                         Positioned(
                           bottom: 20, // Muestra la tarjeta en la parte inferior
                           left: 0,
@@ -234,7 +232,7 @@ class _MapScreenState extends State<MapScreen1> with TickerProviderStateMixin {
                             itemCount: 2,
                             itemBuilder: (context, index) {
                               return _MapItemDetails(
-                                  selectedStoreName: selectedStoreName);
+                                  selectedcine: selectedcine);
                             },
                           ),
                         ),
@@ -246,25 +244,23 @@ class _MapScreenState extends State<MapScreen1> with TickerProviderStateMixin {
     );
   }
 
-  TileLayer(
-      {required String urlTemplate,
-      required Map<String, String> additionalOptions}) {}
+  // Función para obtener las categorías únicas de las tiendas
+  List<String> getUniquenombre(List<Cines> local) {
+    return local.map((local) => local.nombre).toSet().toList();
+  }
 
-  FlutterMap({required options, required List nonRotatedChildren}) {}
+  // Función para filtrar tiendas por categoría
+  List<Cines> getFilteredlocal(
+      List<Cines> local, String? selectednombre) {
+    if (selectednombre == 'Todos los cines' || selectednombre == null) {
+      return local;
+    } else {
+      return local
+          .where((local) => local.nombre == selectednombre)
+          .toList();
+    }
+  }
 
-  MapOptions(
-      {required center,
-      required int minZoom,
-      required int maxZoom,
-      required int zoom}) {}
-
-  MarkerLayer({required List<dynamic> markers}) {}
-
-  getFilteredStores(List<Cines> cine, String? selectedCategory) {}
-
-  LatLng (latitud, longitud) async {}
-
-  getUniqueCategories(List<Cines> cine) {}
 }
 
 class Cines {
@@ -272,7 +268,8 @@ class Cines {
   final double latitud;
   final double longitud;
   final List<String> resenas;
-  final String horarios;
+  final String peliculaProyectandose;
+  final String horainicio;
   final String imagen;
 
   Cines({
@@ -280,51 +277,57 @@ class Cines {
     required this.latitud,
     required this.longitud,
     required this.resenas,
-    required this.horarios,
-    required this.imagen,
+    required this.peliculaProyectandose,
+    required this.horainicio,
+    required this.imagen, required String horarios,
   });
 }
 
-final List<Cines> Cine = [
+final List<Cines> local = [
   Cines(
     nombre: 'Cine Colombia',
     latitud: 10.907399090308166,
     longitud: -74.80040072594659,
     resenas: ['Buen hambiente y excelente calidad', 'Gran servicio'],
     horarios: 'Lun-Vie: 10 AM - 10 PM',
-    imagen: "assets/images/CC.png",
+    imagen: "assets/images/CC.png", peliculaProyectandose: '', horainicio: '',
   ),
   Cines(
     nombre: 'Royal Films',
-    latitud: 10.98967797103843,
-    longitud: -74.78806863132158,
+    latitud: 10.989675364643436,
+    longitud: -74.78810475177276,
     resenas: ['Buenos pasabocas', 'Excelente servicio'],
     horarios: 'Lun-Vie: 10 AM - 10 PM',
-    imagen: "assets/images/royal-films.png",
+    imagen: "assets/images/royal-films.png", peliculaProyectandose: '', horainicio: '',
   ),
+  
+
+  
 ];
 
 class _MapItemDetails extends StatelessWidget {
-  final String selectedStoreName;
+  final String selectedcine;
 
-  const _MapItemDetails({required this.selectedStoreName});
+  _MapItemDetails({required this.selectedcine});
   @override
   Widget build(BuildContext context) {
     // Busca la tienda correspondiente en la lista
-    final store = Cine.firstWhere((store) => store.nombre == selectedStoreName,
-        orElse: () => Cines(
-              nombre: '',
-              latitud: 0.0,
-              longitud: 0.0,
-              resenas: [],
-              horarios: '',
-              imagen: "",
-            ));
+    final locales =
+        local.firstWhere((locales) => locales.nombre == selectedcine,
+            orElse: () => Cines(
+                  nombre: '',
+                  latitud: 0.0,
+                  longitud: 0.0,
+                  resenas: [],
+                  peliculaProyectandose: '',
+                  horainicio: '',
+                  imagen: "", horarios: '',
+                ));
 
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: Card(
-        color: const Color.fromRGBO(255, 255, 255, 1),
+        color: Color.fromARGB(255, 255, 255, 255),
         child: Column(
           children: [
             Row(
@@ -333,11 +336,11 @@ class _MapItemDetails extends StatelessWidget {
                   child: Container(
                       width: 60.0,
                       height: 60.0,
-                      margin: const EdgeInsets.only(top: 20.0),
+                      margin: EdgeInsets.only(top: 20.0),
                       alignment: Alignment.centerLeft,
-                      padding: const EdgeInsets.only(left: 20.0), // Margen izquierdo
+                      padding: EdgeInsets.only(left: 20.0), // Margen izquierdo
                       child: Image.asset(
-                        store.imagen,
+                        locales.imagen,
                       )),
                 ),
                 Expanded(
@@ -351,7 +354,7 @@ class _MapItemDetails extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
-                            store.nombre,
+                            locales.nombre,
                             style: TextStyle(
                                 fontSize: 15.0, // Tamaño de fuente
                                 fontWeight:
@@ -363,20 +366,28 @@ class _MapItemDetails extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(top: 7.0),
                           child: Text(
-                            'Reseñas: ${store.resenas.join(", ")}',
+                            'Reseñas: ${locales.resenas.join(", ")}',
                             style: TextStyle(
                               fontSize: 11.0, // Tamaño de fuente
                               fontWeight: FontWeight.bold, // Peso de la fuente
-                              color: Colors.grey, // Color del texto
+                              color: const Color.fromARGB(255, 0, 0, 0), // Color del texto
                             ),
                           ),
                         ),
                         Text(
-                          'Horarios: ${store.horarios}',
+                          'Promociones: ${locales.peliculaProyectandose}',
+                          style: TextStyle(
+                            fontSize: 11.0, // Tamaño de fuente
+                            fontWeight: FontWeight.bold, // Peso de la fuente
+                            color: const Color.fromARGB(255, 0, 0, 0), // Color del texto
+                          ),
+                        ),
+                        Text(
+                          'Horarios: ${locales.horainicio}',
                           style: TextStyle(
                             fontSize: 11.0, //Tamaño de fuente
                             fontWeight: FontWeight.bold, // Peso de la fuente
-                            color: Colors.grey, // Color del texto
+                            color: const Color.fromARGB(255, 0, 0, 0), // Color del texto
                           ),
                         ),
                       ],
@@ -385,66 +396,65 @@ class _MapItemDetails extends StatelessWidget {
                 ),
               ],
             ),
-            Column(
-              children: [
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment
-                        .center, // Alinea los botones al centro
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            top: 10.0,
-                            right: 10.0), // Aplicar margen a la derecha
-                        child: ElevatedButton.icon(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.black, // Color de fondo del botón
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  20.0), // Bordes redondeados
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    20.0), // Ajusta el espacio horizontal
-                          ),
-                          icon: Icon(
-                            Icons.directions,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Como llegar', // Texto del botón
-                            style: TextStyle(
-                              color: Colors.white, // Color del texto
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 5.0),
-                        child: MaterialButton(
-                          onPressed: () {
-                            // Función a ejecutar cuando se presione el botón de notificación
-                          },
-                          color: Colors.black, // Color de fondo del botón
-                          shape: CircleBorder(), // Forma del botón (circular)
-                          child: Padding(
-                            padding: const EdgeInsets.all(
-                                12.0), // Espacio entre el ícono y el borde del botón
-                            child: Icon(
-                              Icons.notifications, // Icono de navegación
-                              size: 24, // Tamaño del icono
-                              color: Colors.white, // Color del icono
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+        Column(
+  children: [
+    Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center, // Alinea los botones al centro
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 10.0, right: 10.0), // Aplicar margen a la derecha
+            child: ElevatedButton.icon(
+              onPressed: () {Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MyApp()),
+            );
+            },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.black, // Color de fondo del botón
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0), // Bordes redondeados
                 ),
-              ],
+                padding: EdgeInsets.symmetric(
+                    horizontal: 20.0), // Ajusta el espacio horizontal
+              ),
+              icon: Icon(
+                Icons.movie_creation_outlined,
+                color: Color.fromARGB(255, 255, 255, 255), 
+              ),
+              label: Text(
+                'Ver cartelera', // Texto del botón
+                style: TextStyle(
+                  color: Color.fromARGB(255, 255, 255, 255), // Color del texto
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 5.0),
+            child: MaterialButton(
+              onPressed: () {
+                // Función a ejecutar cuando se presione el botón de notificación
+              },
+              color: Colors.black, // Color de fondo del botón
+              shape: CircleBorder(), // Forma del botón (circular)
+              child: Padding(
+                padding: const EdgeInsets.all(12.0), // Espacio entre el ícono y el borde del botón
+                child: Icon(
+                  Icons.notifications, // Icono de navegación
+                  size: 24, // Tamaño del icono
+                  color: Colors.white, // Color del icono
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  ],
+),
+ 
           ],
         ),
       ),

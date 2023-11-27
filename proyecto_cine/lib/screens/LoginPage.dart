@@ -3,11 +3,11 @@ import 'package:proyecto_cine/Sharepreference/Sharepreference.dart';
 import 'package:proyecto_cine/components/MyTextFile.dart';
 import 'package:proyecto_cine/components/Mybutton.dart';
 import 'package:proyecto_cine/components/Squaretile.dart';
-import 'package:proyecto_cine/map.dart';
+import 'package:proyecto_cine/screens/map_screen.dart';
 
-class LoginPage1 extends StatelessWidget {
-  LoginPage1({super.key});
-  static const String nombre = 'Inicia sesion';
+class LoginPage extends StatelessWidget {
+  LoginPage({super.key});
+  static const String nombre = 'login';
   final prefs = PrefernciaUsuario();
 
   // text editing controllers
@@ -19,12 +19,12 @@ class LoginPage1 extends StatelessWidget {
     prefs.usuario = usernameController.text;
     prefs.contrasena = passwordController.text;
     print (prefs.usuario);
-    Navigator.of(context).pushNamed(MapScreen1.nombre);
+    Navigator.of(context).pushNamed(MapScreen.nombre);
   }
 
   @override
   Widget build(BuildContext context) {
-    prefs.ultimapagina = LoginPage1.nombre;
+    prefs.ultimapagina = LoginPage.nombre;
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SafeArea(
@@ -45,7 +45,7 @@ class LoginPage1 extends StatelessWidget {
 
               // welcome back
               Text(
-                'Bienvenido!!',
+                'Bienvenido!',
                 style: TextStyle(
                   color: Colors.grey[700],
                   fontSize: 16,
@@ -57,7 +57,7 @@ class LoginPage1 extends StatelessWidget {
               // username textfield
               MyTextField(
                 controller: usernameController,
-                hintText: 'Nombre de usuario',
+                hintText: 'Usuario',
                 obscureText: false,
               ),
 
@@ -79,7 +79,7 @@ class LoginPage1 extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      '¿Olvidaste tu contraseña?',
+                      'Forgot Password?',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                   ],
@@ -111,7 +111,7 @@ class LoginPage1 extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Text(
-                        'O Ingresa con',
+                        'Or continue with',
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                     ),
@@ -148,12 +148,12 @@ class LoginPage1 extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '¿No recuerdas tu contraseña o nombre de usuario?',
+                    'Not a member?',
                     style: TextStyle(color: Colors.grey[700]),
                   ),
                   const SizedBox(width: 4),
                   const Text(
-                    'Registrate aqui',
+                    'Register now',
                     style: TextStyle(
                       color: Colors.blue,
                       fontWeight: FontWeight.bold,
