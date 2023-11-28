@@ -43,59 +43,69 @@ class _MyAppState extends State<MyApp> {
       imageUrl: 'assets/images/johnwick.jpeg',
       description:
           'El marqués Vincent de Gramont pretende matar a John Wick para afianzar su poder en la Orden Suprema...',
-      horario: '',
-    ),
-    Movie(
-      title: 'Pelicula 3',
-      director: 'Director 3',
-      imageUrl: 'https://example.com/image3.jpg',
-      description: 'Una breve descripción de la Película 3.',
-      horario: '',
+      horario: '11:00AM - 4:00PM',
     ),
   ];
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Cartelera de Películas',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Cartelera de Películas'),
+Widget build(BuildContext context) {
+  final Color primarySwatch = Color.fromARGB(255, 14, 14, 14);
+  return MaterialApp(
+    title: 'Cartelera',
+    theme: ThemeData( 
+      primarySwatch: Colors.grey,
+      scaffoldBackgroundColor: Colors.black,
+    ),
+    debugShowCheckedModeBanner: false,
+    home: Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Cartelera de Películas',
+          style: TextStyle(
+            color: const Color.fromARGB(255, 0, 0, 0),
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        body: ListView.builder(
-          itemCount: movies.length,
-          itemBuilder: (context, index) {
-            return Card(
-              elevation: 2.0,
-              margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: ListTile(
-                contentPadding: EdgeInsets.all(16.0),
-                title: Text(
-                  movies[index].title,
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Director: ${movies[index].director}'),
-                    Text('Horario: ${movies[index].horario}'),
-                  ],
-                ),
-                leading: _buildMovieImage(movies[index].imageUrl),
-                trailing: _buildButtons(context, index),
-                onTap: () {
-                  _navigateToMovieDetails(context, movies[index]);
-                },
+      ),
+      body: ListView.builder(
+        itemCount: movies.length,
+        itemBuilder: (context, index) {
+          return Card(
+            elevation: 2.0,
+            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: ListTile(
+              contentPadding: EdgeInsets.all(16.0),
+              title: Text(
+                movies[index].title,
+                style: TextStyle(
+            color: Color.fromARGB(255, 0, 0, 0),
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
               ),
-            );
-          },
-        ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Director: ${movies[index].director}'),
+                  Text('Horario: ${movies[index].horario}'),
+                ],
+              ),
+              leading: _buildMovieImage(movies[index].imageUrl),
+              trailing: _buildButtons(context, index),
+              onTap: () {
+                _navigateToMovieDetails(context, movies[index]);
+              },
+            ),
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+}
+
+
+
 
   Widget _buildMovieImage(String imageUrl) {
     return ClipRRect(
@@ -158,7 +168,7 @@ class _MyAppState extends State<MyApp> {
     if (movie.title == 'Spider-Man No Way Home') {
       imageUrl = 'assets/images/Spiderman.png';
     } else if (movie.title == 'John Wick 4') {
-      imageUrl = 'assets/images/johnwick2.png';
+      imageUrl = 'assets/images/johnwick2.jpeg';
     } else {
       imageUrl = 'default_image_url';
     }
@@ -197,35 +207,63 @@ class MovieDetailScreen extends StatelessWidget {
               SizedBox(height: 16.0),
               Text(
                 'Titulo: ${movie.title}',
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                style: TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
               ),
               SizedBox(height: 8.0),
               Text(
-                'Director: ${movie.director}',
-                style: TextStyle(fontSize: 18.0),
+                'Director: ${movie.director}'
+                ,style: TextStyle(
+            color: Color.fromARGB(255, 255, 253, 253),
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+          ),
               ),
               SizedBox(height: 8.0),
               Text(
                 'Horario: ${movie.horario}',
-                style: TextStyle(fontSize: 18.0),
+                style: TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+          ),
               ),
               SizedBox(height: 8.0),
               Text(
                 'Descripción:',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                style: TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+          ),
               ),
               Text(
                 movie.description,
-                style: TextStyle(fontSize: 16.0),
+                style: TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+          ),
               ),
               SizedBox(height: 16.0),
               Text(
                 'Reseña:',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                style: TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+          ),
               ),
               Text(
                 movie.review.isNotEmpty ? movie.review : 'No hay reseña disponible.',
-                style: TextStyle(fontSize: 16.0),
+                style: TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+          ),
               ),
             ],
           ),
